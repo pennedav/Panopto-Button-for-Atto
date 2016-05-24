@@ -208,17 +208,34 @@ Y.namespace('M.atto_panoptobutton').Button = Y.Base.create('button', Y.M.editor_
 
         var parent = this;
 
+        function get_thumbnail(id) {
+            var w = 450, h = 300;
+            var alt = "Click here to watch video.";
+            var src = "https://" + servername +
+                "/Panopto/Services/FrameGrabber.svc/FrameRedirect?objectId=" +
+                id + "&mode=Delivery&random=" + Math.random();
+            return '<img src="' + src + '" alt="' + alt + '" width="' +
+                w + '" height="' + h + '">';
+        }
+
+        function get_object_link(id) {
+            var h = "https://" + servername + "/Panopto/Pages/Embed.aspx?id=" + id + "&v=1";
+            return '<a href="' + h + '">' + get_thumbnail(id) + '</a>';
+        }
+
         //Event triggered when response is received from server with object ids
         eventEnter(messageEvent, function (e) {
             var message = JSON.parse(e.data);
             var objectstring = "";
+            var ids;
 
             //Called when "Insert" is clicked. Creates HTML for embedding each selected video into the editor
             if (message.cmd === 'deliveryList') {
                 ids = message.ids;
 
                 for (var value in ids) {
-                    objectstring += "<object type='text/html' data='https://" + servername + "/Panopto/Pages/Embed.aspx?id=" + ids[value] + "&v=1' width='450' height='300' frameborder='0'><br>";
+                    //objectstring += "<object type='text/html' data='https://" + servername + "/Panopto/Pages/Embed.aspx?id=" + ids[value] + "&v=1' width='450' height='300' frameborder='0'><br>";
+                    objectstring += get_object_link(ids[value]) + '<br>';
                 }
 
                 parent.editor.focus();
@@ -248,5 +265,6 @@ Y.namespace('M.atto_panoptobutton').Button = Y.Base.create('button', Y.M.editor_
         }
     }
 });
+
 
 }, '@VERSION@', {"requires": ["moodle-editor_atto-plugin"]});

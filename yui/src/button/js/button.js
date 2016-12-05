@@ -234,6 +234,23 @@ var COMPONENTNAME = 'atto_panoptobutton',
             evententer = window[eventmethod];
             messageevent = eventmethod === 'attachEvent' ? 'onmessage' : 'message';
 
+            // BEGIN EMU ALT-EMBED
+            function get_thumbnail(id) {
+                var w = 450, h = 300;
+                var alt = "Click here to watch video.";
+                var src = "https://" + servername +
+                    "/Panopto/Services/FrameGrabber.svc/FrameRedirect?objectId=" +
+                    id + "&mode=Delivery&random=" + Math.random();
+                return '<img src="' + src + '" alt="' + alt + '" width="' +
+                    w + '" height="' + h + '">';
+            }
+
+            function get_object_link(id) {
+                var h = "https://" + servername + "/Panopto/Pages/Embed.aspx?id=" + id + "&v=1";
+                return '<a href="' + h + '">' + get_thumbnail(id) + '</a>';
+            }
+            // END EMU ALT-EMBED
+
             // Event triggered when response is received from server with object ids.
             evententer(messageevent, function (e) {
                 var message,
@@ -248,12 +265,18 @@ var COMPONENTNAME = 'atto_panoptobutton',
                         ids = message.ids;
 
                         for (var value in ids) {
-                            objectstring +=
+                            // BEGIN EMU ALT-EMBED
+
+                            /*objectstring +=
                                 "<object type='text/html' data='https://" +
                                 servername +
                                 '/Panopto/Pages/Embed.aspx?id=' +
                                 ids[value] +
-                                "&v=1' width='450' height='300' frameborder='0'></object><br>";
+                                "&v=1' width='450' height='300' frameborder='0'></object><br>";*/
+
+                            objectstring += get_object_link(ids[value]) + '<br>';
+
+                            // END EMU ALT-EMBED
                         }
 
                         parent.editor.focus();
